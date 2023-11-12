@@ -5,8 +5,8 @@ from async_API.requests.requests_utils import logger_message
 
 from os import environ
 
-# token_drf_bot = 'a6ffe1533c4ccd034be9b1fe28541913bf3d2b50'  # todo в переменные окружения (dev)
-token_drf_bot = environ.get('DRF_TOKEN')
+token_drf_bot = 'a6ffe1533c4ccd034be9b1fe28541913bf3d2b50'  # todo в переменные окружения (dev)
+# token_drf_bot = environ.get('DRF_TOKEN')
 
 
 class APIRequests:
@@ -14,8 +14,8 @@ class APIRequests:
         self.headers = {
             "Authorization": f"Token {token_drf_bot}"
         }
-        # self.url = 'http://127.0.0.1:8000/api/'
-        self.url = environ.get('DRF_URL')
+        self.url = 'http://127.0.0.1:8000/api/'
+        # self.url = environ.get('DRF_URL')
 
     async def get_all(self) -> list:
         """
@@ -109,11 +109,11 @@ class APIRequests:
 class Profile(APIRequests):
     def __init__(self):
         super().__init__()
-        self.profile_register = self.url
+        self.empty = self.url
         self.url = self.url + 'profile/'
 
     async def register_new_user(self, **kwargs):
-        url = self.profile_register + 'register-from-bot/'
+        url = self.empty + 'register-from-bot/'
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=self.headers, json=kwargs.get('body')) as response:
                 logger.info(f'Sending POST to {url}')
@@ -141,7 +141,24 @@ class RegisteredGroup(APIRequests):
 class Transaction(APIRequests):
     def __init__(self):
         super().__init__()
+        self.empty = self.url
         self.url = self.url + 'transaction/'
+
+    async def get_amount_by_group_from_week_start(self, group_tg_id):
+        """
+        Gets total amount of transactions in current week by group.
+        """
+        url = f'{self.empty}get-week-transactions/?group_id={group_tg_id}'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=self.headers) as response:
+                logger.info(f'Sending POST to {url}')
+                if response.status == 200:
+                    logger_message('info', method='POST', url=url, headers=self.headers)
+                    return await response.json()
+                else:
+                    logger_message('error', method='POST', url=url, headers=self.headers)
+                    logger.error(await response.text())
+                    return
 
 
 class ProfileGroup(APIRequests):

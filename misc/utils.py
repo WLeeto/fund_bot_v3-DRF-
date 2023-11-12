@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import types
 from aiogram.enums import ChatMemberStatus
 
@@ -176,3 +178,21 @@ async def is_group_active(group_id: int, msg: types.Message) -> bool:
     else:
         await msg.answer(errors['group_is_not_active'])
         return False
+
+
+def get_monday_date() -> datetime.date:
+    """
+    Get date of monday in current week.
+    """
+    today = datetime.date.today()
+    week_day = today.weekday()
+    days_to_monday = 0 - week_day
+    return today + datetime.timedelta(days=days_to_monday)
+
+
+async def get_amount_of_all_transactions_for_group(msg: types.Message) -> dict:
+    """
+    Returns amount of all transaction in msg. group of the week.
+    """
+    returned_dict = await transaction_req.get_amount_by_group_from_week_start(msg.chat.id)
+    return returned_dict
