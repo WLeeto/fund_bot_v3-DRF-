@@ -6,14 +6,16 @@ from aiogram.enums import ChatMemberStatus
 from create_bot import group_req, profile_req, registeredgroup_req, transaction_req, profile_group_req, bot
 from create_logger import logger
 from texts.all_messages import info, errors
+from aiogram.methods import SetMyCommands
 
 
-async def set_default_commands(dp):
+async def set_default_commands():
     """
 
     """
-    await dp.bot.set_my_commands([
-        types.BotCommand("start", "Start dialogue"),
+    await bot.set_my_commands([
+        types.BotCommand(command="start", description="Начать работу"),
+        types.BotCommand(command="balance", description="Узнать текущий баланс"),
     ])
 
 

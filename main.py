@@ -10,7 +10,7 @@ async def start():
     """
     Запуск бота
     """
-    asyncio.create_task(set_default_commands(dp))
+    await set_default_commands()
     logger.info('Бот запущен')
 
 
@@ -29,6 +29,7 @@ other.register_handlers_other(dp)
 
 
 async def main():
+    await start()
     await dp.start_polling(bot)
 
 
