@@ -5,8 +5,8 @@ from async_API.requests.requests_utils import logger_message
 
 from os import environ
 
-token_drf_bot = 'a6ffe1533c4ccd034be9b1fe28541913bf3d2b50'  # todo в переменные окружения (dev)
-# token_drf_bot = environ.get('DRF_TOKEN')
+# token_drf_bot = 'a6ffe1533c4ccd034be9b1fe28541913bf3d2b50'  # todo в переменные окружения (dev)
+token_drf_bot = environ.get('DRF_TOKEN')
 
 
 class APIRequests:
@@ -14,8 +14,8 @@ class APIRequests:
         self.headers = {
             "Authorization": f"Token {token_drf_bot}"
         }
-        self.url = 'http://127.0.0.1:8000/api/'
-        # self.url = environ.get('DRF_URL')
+        # self.url = 'http://127.0.0.1:8000/api/'
+        self.url = environ.get('DRF_URL')
 
     async def get_all(self) -> list:
         """
