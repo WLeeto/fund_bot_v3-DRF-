@@ -57,6 +57,8 @@ async def get_balance(msg: types.Message):
     transaction_amount_dict = await get_amount_of_all_transactions_for_group(msg)
     week_limit = transaction_amount_dict["data"].get("group_limit")
     total_spend_amount = transaction_amount_dict["data"].get("transactions_amount")
+    if not total_spend_amount:
+        total_spend_amount = 0
     week_leak = transaction_amount_dict["data"].get("group_leak")
     remain_balance = week_limit - total_spend_amount + week_leak
     remain_one_week_only = week_limit - total_spend_amount
