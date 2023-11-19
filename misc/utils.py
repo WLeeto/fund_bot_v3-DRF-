@@ -123,7 +123,12 @@ async def create_new_transaction_with_validations(msg: types.Message):
         return
     result = await create_new_transaction(user[0]['id'], group[0]['id'], msg.text)
     if result:
-        await msg.answer(info['transaction_success'].format(amount=msg.text))
+        transaction_amount_dict = await get_amount_of_all_transactions_for_group(msg)
+        week_limit = transaction_amount_dict["data"].get("group_limit")
+        week_leak = transaction_amount_dict["data"].get("group_leak")
+        total_spend_amount = transaction_amount_dict["data"].get("transactions_amount")
+        remain_balance = week_limit - total_spend_amount + week_leak
+        await msg.answer(info['transaction_success'].format(amount=msg.text, week_balance=remain_balance))
     else:
         await msg.answer(errors['cant_create_transaction'])
 

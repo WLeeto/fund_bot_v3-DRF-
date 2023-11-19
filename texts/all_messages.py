@@ -33,7 +33,8 @@ user_has_been_registered = 'Пользователь был зарегистри
                            'password: {password}\n'
 user_already_registared = 'Пользователь уже зарегистрирован.'
 week_limit_changed = 'Недельный лимит изменен на {new_limit}'
-transaction_success = 'Транзакция на {amount} создана'
+transaction_success = 'Транзакция на {amount} создана\n' \
+                      'Текущий недельный баланс {week_balance}'
 cant_register_user = 'cant_register_user'
 user_already_registered = 'Пользователь уже зарегистрирован'
 
