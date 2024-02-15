@@ -1,11 +1,13 @@
+import asyncio
 import datetime
 
 from aiogram import Dispatcher, types, F
 from aiogram.enums import ChatMemberStatus
 from aiogram.filters import Command
 from aiogram.types import ChatMember
-from create_bot import dp, registeredgroup_req, group_req, profile_req, bot
+from create_bot import dp, registeredgroup_req, group_req, profile_req, bot, transaction_req
 from create_logger import logger
+from keyboards.cancel_transaction import cancel_transaction_kb, CancelTransactionCallbackFactory
 from misc.utils import register_new_group, register_new_user, register_user_if_not_exists, \
     register_group_with_validation, set_new_group_limit, create_new_transaction, \
     create_new_transaction_with_validations, register_user_group_with_validation, is_group_active, get_monday_date, \
@@ -69,6 +71,30 @@ async def get_balance(msg: types.Message):
            f'Недельный лимит: <u><code>{week_limit}</code></u>\n' \
            f'Остаток с прошлой недели: <u><code>{week_leak}</code></u>'
     await msg.answer(text, parse_mode='HTML')
+
+
+@dp.message(Command(commands=['ct', 'cancel', 'отменить']))
+async def get_cancel_transaction_keyboard(msg: types.Message):
+    if msg.from_user.id != msg.chat.id:
+        cancelable_transactions = await transaction_req.get_cancelable_transactions(msg.chat.id)
+        transaction_to_cancel_mk = cancel_transaction_kb(cancelable_transactions)
+        keyboard = await msg.answer('Какую транзакцию отменить?', reply_markup=transaction_to_cancel_mk)
+        await asyncio.sleep(5)
+        try:
+            await keyboard.edit_text('Скрыто по таймауту')
+        except Exception as ex:
+            pass
+
+
+@dp.callback_query(CancelTransactionCallbackFactory.filter())
+async def cancel_transaction(callback: types.CallbackQuery, callback_data: CancelTransactionCallbackFactory):
+    await callback.message.delete()
+    transaction_to_cancel_id = callback_data.value
+    result = await transaction_req.delete_transaction(transaction_to_cancel_id)
+    if result:
+        await callback.message.answer(f'Транзакция на сумму {callback_data.action} удалена')
+    else:
+        await callback.message.answer('Не удалось удалить транзакцию')
 
 
 def register_handlers_client(dp: Dispatcher):

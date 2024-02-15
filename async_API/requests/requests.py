@@ -151,14 +151,46 @@ class Transaction(APIRequests):
         url = f'{self.empty}get-week-transactions/?group_id={group_tg_id}'
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=self.headers) as response:
-                logger.info(f'Sending POST to {url}')
+                logger.info(f'Sending GET to {url}')
                 if response.status == 200:
-                    logger_message('info', method='POST', url=url, headers=self.headers)
+                    logger_message('info', method='GET', url=url, headers=self.headers)
                     return await response.json()
                 else:
-                    logger_message('error', method='POST', url=url, headers=self.headers)
+                    logger_message('error', method='GET', url=url, headers=self.headers)
                     logger.error(await response.text())
                     return
+
+    async def get_cancelable_transactions(self, group_id: int) -> list:
+        """
+        Get list of cancalable transactions.
+        """
+        url = f'{self.empty}get-canseling-transactions/?group_id={group_id}'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=self.headers) as response:
+                logger.info(f'Sending GET to {url}')
+                if response.status == 200:
+                    logger_message('info', method='GET', url=url, headers=self.headers)
+                    return await response.json()
+                else:
+                    logger_message('error', method='GET', url=url, headers=self.headers)
+                    logger.error(await response.text())
+                    return
+
+    async def delete_transaction(self, transaction_id) -> bool:
+        """
+                Get list of cancalable transactions.
+                """
+        url = f'{self.url}{transaction_id}/'
+        async with aiohttp.ClientSession() as session:
+            async with session.delete(url, headers=self.headers) as response:
+                logger.info(f'Sending DELETE to {url}')
+                if response.status == 204:
+                    logger_message('info', method='DELETE', url=url, headers=self.headers)
+                    return True
+                else:
+                    logger_message('error', method='DELETE', url=url, headers=self.headers)
+                    logger.error(await response.text())
+                    return False
 
 
 class ProfileGroup(APIRequests):
